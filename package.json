@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "lerna run serve --scope ui-lib --scope app-b --parallel",
     "bootstrap": "lerna bootstrap --hoist",
     "clean": "lerna clean"
   },

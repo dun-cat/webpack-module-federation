@@ -5,6 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { ModuleFederationPlugin } = require("webpack").container;
 const isProduction = process.env.NODE_ENV == 'production';
 
+const deps = require("./package.json").dependencies;
+
 
 const config = {
   entry: './src/index.js',
@@ -21,9 +23,19 @@ const config = {
       name: "app_b",
       filename: 'b_entry.js',
       remotes: {
+        "app-a": 'app_a@http://localhost:3001/a_entry.js',
         "@lumin-ui": 'ui_lib@http://localhost:3003/ui.js',
       },
-
+      shared: [{
+        react: {
+          requiredVersion: deps.react,
+          singleton: true,
+        },
+        "react-dom": {
+          requiredVersion: deps['react-dom'],
+          singleton: true,
+        },
+      }]
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',

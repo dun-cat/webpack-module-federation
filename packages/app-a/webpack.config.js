@@ -2,6 +2,9 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { ModuleFederationPlugin } = require("webpack").container;
+
+const deps = require("./package.json").dependencies;
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -14,8 +17,31 @@ const config = {
     devServer: {
         open: true,
         host: 'localhost',
+        port: '3001'
     },
     plugins: [
+        new ModuleFederationPlugin({
+            name: "app_a",
+            filename: 'a_entry.js',
+            exposes: {
+                './hooks': "./src/hooks/",
+                "./button": "./src/Button.js"
+            },
+            remotes: {
+                "@lumin-ui": 'ui_lib@http://localhost:3003/ui.js',
+
+            },
+            shared: {
+                react: {
+                    requiredVersion: deps.react,
+                    singleton: true,
+                },
+                "react-dom": {
+                    requiredVersion: deps['react-dom'],
+                    singleton: true,
+                },
+            },
+        }),
         new HtmlWebpackPlugin({
             template: './public/index.html',
         }),
